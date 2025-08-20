@@ -91,3 +91,44 @@
 - **Python 3.8+** - язык программирования
 
 ## 📦 Структура проекта
+
+FastAPI_music/
+├── 📁 src/ # Основной исходный код
+│ ├── 📁 api/ # API роутеры (сервисы)
+│ │ ├── init.py
+│ │ ├── albumService.py # API для альбомов
+│ │ ├── authorService.py # API для авторов
+│ │ ├── genreService.py # API для жанров
+│ │ ├── playlistService.py # API для плейлистов
+│ │ ├── trackService.py # API для треков
+│ │ ├── userPreferenceService.py # API для предпочтений
+│ │ └── userService.py # API для пользователей
+│ │
+│ ├── 📁 bd/ # Настройки базы данных
+│ │ └── database.py # Конфигурация БД и сессии
+│ │
+│ ├── 📁 models/ # Модели данных
+│ │ └── modelsPD.py # Pydantic модели
+│ │
+│ ├── 📁 repository/ # Репозитории для работы с БД
+│ │ ├── init.py
+│ │ ├── albumRepository.py # Репозиторий альбомов
+│ │ ├── authorRepository.py # Репозиторий авторов
+│ │ ├── genreRepository.py # Репозиторий жанров
+│ │ ├── playlistRepository.py # Репозиторий плейлистов
+│ │ ├── trackRepository.py # Репозиторий треков
+│ │ ├── userPreferenceRepository.py # Репозиторий предпочтений
+│ │ └── userRepository.py # Репозиторий пользователей
+│ │
+│ └── 📁 tests/ # Тесты
+│ ├── init.py
+│ └── testRepository.py # Тесты репозиториев
+│
+├── 📁 migrations/ # Миграции базы данных
+├── 📁 venv/ # Виртуальное окружение
+├── .gitignore # Игнорируемые файлы для Git
+├── alembic.ini # Конфигурация Alembic
+├── data_for_database.py # Скрипт для заполнения БД
+├── main.py # Главный файл приложения
+├── settingsBD.py # Настройки базы данных
+└── requirements.txt # Зависимости проекта
