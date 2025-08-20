@@ -100,3 +100,39 @@ python -m venv venv
 source venv/bin/activate  # Linux/Mac
 # или
 venv\Scripts\activate     # Windows
+```
+
+2. **Установка зависимостей**
+ ```bash
+ pip install -r requirements.txt
+ ```
+4. **Настройка миграций**
+```bash
+alembic revision --autogenerate -m "Initial migration"
+alembic upgrade head
+```
+5. Запуск сервера uvicorn
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## 🔧 Конфигурация бд 
+
+Настройки базы данных находятся в файле settingsBD.py:
+```text
+DB_HOST = "localhost"
+DB_PORT = 5432
+DB_NAME = "music_db"
+DB_USER = "user"
+DB_PASS = "password"
+```
+
+
+## 🔮 Планы развития
+
+- Аутентификация и авторизация (JWT)
+- Стриминг аудиофайлов
+- Продвинутая система рекомендаций
+- Мобильное приложение
+- Социальные функции (комментарии, sharing)
+- Monetization система
