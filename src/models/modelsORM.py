@@ -114,21 +114,6 @@ class PlayList(Base):
     tracks = relationship("Track", secondary="playlist_tracks", back_populates="playlist")
 
 
-# class UserPreference(Base):
-#
-#     __tablename__ = "userPreferences"
-#
-#     id = Column(Integer, primary_key=True, autoincrement=True, index=True, nullable=False)
-#     id_user = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
-#     id_track = Column(Integer, ForeignKey("tracks.id", ondelete="CASCADE"))
-#     id_album = Column(Integer, ForeignKey("albums.id"), index=True)
-#
-#     user = relationship("User", back_populates="userPreference")
-#     tracks = relationship("Track", back_populates="userPreference")
-#     album = relationship("Album", back_populates="userPreference")
-
-
-
 class UserTrackPreference(Base):
     __tablename__ = "user_track_preferences"
 
