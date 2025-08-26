@@ -1,0 +1,138 @@
+# 🎵 FastAPI Music Streaming Service
+
+Онлайн-платформа для прослушивания музыки, разработанная на современном стеке технологий с использованием FastAPI и SQLAlchemy.
+
+## 🚀 Возможности
+
+### 🎼 Управление музыкальным контентом
+- **Треки** - полное CRUD управление музыкальными композициями
+- **Альбомы** - организация треков в альбомы с метаданными
+- **Жанры** - категоризация музыкального контента
+- **Авторы** - управление информацией об исполнителях
+
+### 📋 Плейлисты и персонализация
+- **Плейлисты** - создание и управление персональными подборками
+- **Система предпочтений** - лайки треков и альбомов
+- **Персональные рекомендации** - на основе предпочтений пользователей
+
+### 👥 Управление пользователями
+- **Профили пользователей** - система учетных записей
+- **Статусы активности** - управление активностью пользователей
+- **Поиск пользователей** - по имени, email и другим параметрам
+
+## 📊 API Эндпоинты
+
+### 🎧 Треки (`/tracks`)
+- `GET /tracks` - список всех треков
+- `GET /tracks/top` - топовые треки по рейтингу
+- `GET /tracks/{id}` - получить трек по ID
+- `GET /tracks/by-album/{id}` - треки по альбому
+- `GET /tracks/by-genre/{id}` - треки по жанру
+- `GET /tracks/by-author/{id}` - треки по автору
+- `GET /tracks/search/` - поиск треков по названию
+- `POST /tracks` - создать новый трек
+- `PUT /tracks/{id}` - обновить трек
+- `DELETE /tracks/{id}` - удалить трек
+
+### 💿 Альбомы (`/albums`)
+- `GET /albums/` - список альбомов с пагинацией
+- `GET /albums/{id}` - получить альбом по ID
+- `GET /albums/search/by-genre/{id}` - альбомы по жанру
+- `POST /albums/` - создать новый альбом
+- `PUT /albums/{id}` - обновить альбом
+- `DELETE /albums/{id}` - удалить альбом
+
+### 🎭 Жанры (`/genres`)
+- `GET /genres/` - список всех жанров
+- `GET /genres/{id}` - получить жанр по ID
+- `POST /genres/` - создать новый жанр
+- `DELETE /genres/{id}` - удалить жанр
+
+### 🎤 Авторы (`/authors`)
+- `GET /authors/` - список авторов
+- `GET /authors/{id}` - автор по ID
+- `GET /authors/by-user/{id}` - автор по ID пользователя
+- `POST /authors/` - создать автора
+- `PATCH /authors/{id}` - обновить автора
+- `DELETE /authors/{id}` - удалить автора
+
+### 📑 Плейлисты (`/playlists`)
+- `GET /playlists/` - список плейлистов
+- `GET /playlists/{id}` - плейлист по ID
+- `GET /playlists/{id}/tracks` - треки в плейлисте
+- `POST /playlists/` - создать плейлист
+- `PATCH /playlists/{id}` - обновить плейлист
+- `PUT /playlists/add-track/{id}` - добавить трек в плейлист
+- `DELETE /playlists/{id}` - удалить плейлист
+
+### ❤️ Предпочтения (`/preference`)
+- `GET /preference/tracks` - все лайки треков
+- `GET /preference/albums` - все лайки альбомов
+- `GET /preference/users/{id}/tracks` - лайки треков пользователя
+- `GET /preference/users/{id}/albums` - лайки альбомов пользователя
+- `POST /preference/users/{id}/tracks/{id}` - лайкнуть трек
+- `POST /preference/users/{id}/albums/{id}` - лайкнуть альбом
+- `DELETE /preference/tracks/{id}` - удалить лайк трека
+- `DELETE /preference/albums/{id}` - удалить лайк альбома
+
+### 👤 Пользователи (`/users`)
+- `GET /users/active` - активные пользователи
+- `GET /users/by-username/{name}` - пользователь по имени
+- `GET /users/by-email/{email}` - пользователь по email
+- `GET /users/count` - количество пользователей
+- `GET /users/{id}` - пользователь по ID
+- `PUT /users/{id}/status` - изменить статус пользователя
+
+## 🛠 Технологический стек
+
+- **FastAPI** - современный высокопроизводительный фреймворк
+- **SQLAlchemy** - ORM для работы с базой данных
+- **Pydantic** - валидация данных и сериализация
+- **Python 3.8+** - язык программирования
+
+## 📦 Установка и запуск
+
+1. **Клонирование и настройка окружения:**
+```bash
+git clone <repository-url>
+cd FastAPI_music
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# или
+venv\Scripts\activate     # Windows
+```
+
+2. **Установка зависимостей**
+ ```bash
+ pip install -r requirements.txt
+ ```
+4. **Настройка миграций**
+```bash
+alembic revision --autogenerate -m "Initial migration"
+alembic upgrade head
+```
+5. Запуск сервера uvicorn
+```bash
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## 🔧 Конфигурация бд 
+
+Настройки базы данных находятся в файле settingsBD.py:
+```text
+DB_HOST = "localhost"
+DB_PORT = 5432
+DB_NAME = "music_db"
+DB_USER = "user"
+DB_PASS = "password"
+```
+
+
+## 🔮 Планы развития
+
+- Аутентификация и авторизация (JWT)
+- Стриминг аудиофайлов
+- Продвинутая система рекомендаций
+- Мобильное приложение
+- Социальные функции (комментарии, sharing)
+- Monetization система
