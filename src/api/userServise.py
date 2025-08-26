@@ -8,8 +8,10 @@ from src.repository.userRepository import (
     get_user_by_email,
     get_count_users,
     set_user_status,
+    create_user,
 )
-from typing import List, Optional
+from typing import List, Optional, Dict
+from src.core.security import security
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -54,6 +56,12 @@ async def change_user_status(
 @router.get("/{id_user}", response_model=UserPDData)
 async def get_user_by_id(id_user: int = Path(description="ID пользователя")) -> UserPDData:
     return get_user_by_id_orm(session_factory, id_user)
+
+@router.post("/create", response_model=UserPDData)
+async def create_new_user(data: UserCreate) -> UserPDData:
+    return create_user(session_factory, data)
+
+
 
 
 

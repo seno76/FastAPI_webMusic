@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, Path, HTTPException
+from fastapi import APIRouter, Query, Path, HTTPException, Depends
 from typing import List, Optional, Dict
 from src.bd.database import session_factory
 from src.models.modelsPD import AlbumPD, AlbumPDData, AlbumCreate, AlbumUpdate
@@ -10,10 +10,11 @@ from src.repository.albumRepository import (
     get_albums_by_genre,
     delete_album_by_id,
 )
+from src.core.security import security
 
 router = APIRouter(prefix="/albums", tags=["Albums"])
 
-@router.get("/", response_model=List[AlbumPDData])
+@router.get("/", response_model=List[AlbumPDData], dependencies=[Depends(security.access_token_required)])
 async def list_albums(offset: int = Query(0, ge=0), limit: int = Query(100, le=500)):
     return get_all_albums(session_factory, offset=offset, limit=limit)
 

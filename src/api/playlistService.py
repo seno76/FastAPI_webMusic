@@ -23,6 +23,7 @@ router = APIRouter(
     prefix="/playlists",
     tags=["Playlists"]
 )
+from src.core.security import security
 
 @router.get("/", response_model=List[PlayListPD])
 async def playlists(limit: int = 1000, offset: int = 0) -> List[PlayListPD]:

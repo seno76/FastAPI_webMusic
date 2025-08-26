@@ -1,3 +1,5 @@
+import hashlib
+
 from src.models.modelsORM import *
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy import select, text, Engine, update, func, delete, Result
@@ -80,9 +82,11 @@ def get_count_users(db: Session, only_active: bool = None) -> int:
 
 
 # Создание нового пользователя
-def create_user(db: Session, data: dict) -> Optional[UserPDData]:
+def create_user(db: Session, data: UserCreate) -> Optional[UserPDData]:
     with db() as session:
-        user = User(**data)
+        user = User(**data.model_dump())
+        password = user.password_hash.encode('utf-8')
+        user.password_hash = hashlib.sha256(password).hexdigest()
         session.add(user)
         session.commit()
         return UserPDData.model_validate(user)
@@ -100,3 +104,9 @@ def get_plalylist_by_user_id(db: Session, user_id: int) -> List[PlayListPDData]:
         query = select(PlayList).where(PlayList.id_user == user_id)
         playlists = session.execute(query).unique().scalars().all()
         return [PlayListPDData.model_validate(playlist) for playlist in playlists]
+
+def auth_user(db: Session, username: str, password: str) -> int:
+    with db() as session:
+        qeury = select(User).filter(User.username == username)
+        user = session.execute(qeury).scalar_one_or_none()
+        return user and user.password_hash == password

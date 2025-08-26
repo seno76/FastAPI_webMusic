@@ -13,9 +13,7 @@ class UserBase(BaseModel):
     email: EmailStr
     password_hash: str
     is_active: bool
-    admin: bool = False
     created_at: datetime = Field(default_factory=datetime.now)
-    last_login: Optional[datetime] = None
 
     @field_validator("username", mode="before")
     def check_invalid_chars(cls, s: str) -> str:
@@ -39,9 +37,7 @@ class UserUpdate(BaseModel):
     email: EmailStr | None = None
     password_hash: str | None = None
     is_active: bool | None = None
-    admin: bool | None = None
     created_at: datetime | None = None
-    last_login: Optional[datetime] = None
 
 
 class UserPDData(UserPD):
@@ -50,6 +46,10 @@ class UserPDData(UserPD):
     track_preferences: List['PreferenceTrackPDData'] = []
     album_preferences: List['PreferenceAlbumPDData'] = []
 
+
+class UserLogin(BaseModel):
+    username: str
+    password_hash: str
 
 # -----------------------------
 # AUTHORS
@@ -266,6 +266,7 @@ __all__ = [
     "UserCreate",
     "UserUpdate",
     "UserPDData",
+    "UserLogin",
 
     # Authors
     "AuthorBase",

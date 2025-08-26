@@ -8,6 +8,7 @@ from src.repository.genreRepository import (
     create_new_genre,
     delete_genre,
 )
+from src.core.security import security
 
 
 router = APIRouter(

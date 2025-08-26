@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальная платформа</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Музыкальная платформа</h1>
+            <nav>
+                <button class="nav-btn active" data-section="tracks">Треки</button>
+                <button class="nav-btn" data-section="albums">Альбомы</button>
+                <button class="nav-btn" data-section="playlists">Плейлисты</button>
+                <button class="nav-btn" data-section="artists">Артисты</button>
+                <button class="nav-btn" data-section="genres">Жанры</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Секция треков -->
+            <section id="tracks-section" class="section active">
+                <h2>Треки</h2>
+                <div class="controls">
+                    <input type="text" id="track-search" placeholder="Поиск треков...">
+                    <button onclick="searchTracks()">Найти</button>
+                </div>
+                <div id="tracks-list" class="items-list"></div>
+            </section>
+
+            <!-- Секция альбомов -->
+            <section id="albums-section" class="section">
+                <h2>Альбомы</h2>
+                <div id="albums-list" class="items-list"></div>
+            </section>
+
+            <!-- Секция плейлистов -->
+            <section id="playlists-section" class="section">
+                <h2>Плейлисты</h2>
+                <div id="playlists-list" class="items-list"></div>
+            </section>
+
+            <!-- Секция артистов -->
+            <section id="artists-section" class="section">
+                <h2>Артисты</h2>
+                <div id="artists-list" class="items-list"></div>
+            </section>
+
+            <!-- Секция жанров -->
+            <section id="genres-section" class="section">
+                <h2>Жанры</h2>
+                <div id="genres-list" class="items-list"></div>
+            </section>
+        </main>
+
+        <!-- Модальное окно -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modal-title">Детали</h2>
+                <div id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

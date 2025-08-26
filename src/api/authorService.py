@@ -10,6 +10,7 @@ from src.repository.authorRepository import (
     update_author,
     get_all_authors
 )
+from src.core.security import security
 
 router = APIRouter(prefix="/authors", tags=["authors"])
 

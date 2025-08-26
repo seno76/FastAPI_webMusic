@@ -24,6 +24,7 @@ from src.repository.trackRepository import (
     get_average_rating,
     get_total_duration,
 )
+from src.core.security import security
 
 router = APIRouter(
     prefix="/tracks",
