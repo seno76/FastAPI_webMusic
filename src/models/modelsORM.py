@@ -138,5 +138,15 @@ class UserAlbumPreference(Base):
 
 print(Base.metadata.tables)
 
-__all__ = ["User", "Author", "Track", "Album", "Genre", "PlayList", "PlaylistTrack",
-           "UserTrackPreference", "UserAlbumPreference", "TypeItem"]
+__all__ = [
+    "User",
+    "Author",
+    "Track",
+    "Album",
+    "Genre",
+    "PlayList",
+    "PlaylistTrack",
+    "UserTrackPreference",
+    "UserAlbumPreference",
+    "TypeItem",
+]

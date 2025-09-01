@@ -1,112 +1,119 @@
 import hashlib
-
 from src.models.modelsORM import *
-from sqlalchemy.orm import Session, selectinload
-from sqlalchemy import select, text, Engine, update, func, delete, Result
+from sqlalchemy.orm import selectinload
+from sqlalchemy import select, update, func, delete
 from src.models.modelsPD import *
 from typing import Optional, List
+from src.bd.database import session_factory
+
+from src.utils.abstractions import SQLAlchemyRepository
 
 
-# CORE (Поиск пользователя по id)
-def get_user_by_id_core(engine: Engine, user_id: int) -> User:
-    with engine.connect() as conn:
-        query = text("SELECT * FROM users WHERE id=:id")
-        query = query.bindparams(id=user_id)
-        user = conn.execute(query).all()
-        conn.commit()
-        return user
+class UserRepository(SQLAlchemyRepository):
 
+    model = User
 
-# ORM (Поиск пользователя по id)
-def get_user_by_id_orm(session: Session, user_id: int) -> UserPDData:
-    with session() as session:
-        query = (select(User).where(User.id == user_id)
-             .options(
-                selectinload(User.author),
-                selectinload(User.playlists),
+    def _get_users_with_filter(self, filter_condition=None) -> List[UserPDData]:
+        with session_factory() as session:
+            query = select(self.model)
+            if filter_condition:
+                query = query.where(filter_condition)
+
+            users = session.execute(query).scalars().all()
+            return [UserPDData.model_validate(user) for user in users]
+
+    def find_all(self) -> UserPD:
+        return self._get_users_with_filter()
+
+    def get_by_id(self, user_id: int) -> UserPDData:
+        with session_factory() as session:
+
+            query = (
+                select(self.model)
+                .where(self.model.id == user_id)
+                .options(
+                    selectinload(self.model.author),
+                    selectinload(self.model.playlists),
+                )
             )
-        )
-        user = session.execute(query).scalars().first()
-        session.commit()
-        UserPDData.model_validate(user)
-        return UserPDData.model_validate(user)
+            user = session.execute(query).scalar_one()
+            return UserPDData.model_validate(user)
 
+    def is_active(self) -> List[UserPDData]:
+        return self._get_users_with_filter(self.model.is_active == True)
 
-# ORM (Поиск пользователя по статусу активации)
-def get_users_is_active(session: Session) -> List[UserPDData]:
-    with session() as session:
-        query = select(User).where(User.is_active == True)
-        users = session.execute(query).scalars().all()
-        return [UserPDData.model_validate(user) for user in users]
+    def is_passive(self) -> List[UserPDData]:
+        return self._get_users_with_filter(self.model.is_active == False)
 
+    def by_username(self, user_name: str) -> Optional[UserPDData]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.username == user_name)
+            user = session.execute(query).scalar_one_or_none()
+            if user is None:
+                return None
+            return UserPDData.model_validate(user)
 
-# ORM (Поиск пользователя по имени)
-def get_user_by_username(session: Session, user_name: str) -> Optional[UserPDData]:
-    with session() as session:
-        query = select(User).where(User.username == user_name)
-        user = session.execute(query).scalar_one_or_none()
-        if user is None:
+    # ORM (Поиск пользователя по мылу)
+    def user_by_email(self, email: str) -> Optional[UserPDData]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.email == email)
+            user = session.execute(query).scalar_one_or_none()
+            if user is None:
+                return None
+            return UserPDData.model_validate(user)
+
+    # ORM (Установление значения статуса)
+    def set_user_status(self, user_id: int, status: bool) -> Optional[UserPDData]:
+        with session_factory() as session:
+            user = session.get(self.model, user_id)
+            query = (
+                update(self.model)
+                .where(self.model.id == user_id)
+                .values(is_active=status)
+            )
+            session.execute(query)
+            session.commit()
+            return UserPDData.model_validate(user)
+
+    # Вывод количества пользователей (user) в бд
+    def count_users(self, only_active: bool = None) -> int:
+        with session_factory() as session:
+            query = select(func.count(self.model.id))
+            if only_active:
+                query = query.where(self.model.is_active == True)
+            elif only_active is False:
+                query = query.where(self.model.is_active == False)
+            res = session.execute(query).scalar()
+        return res
+
+    # Создание нового пользователя
+    def create_user(self, data: dict) -> Optional[UserPDData]:
+        with session_factory() as session:
+            user = self.model(**data)
+            password = user.password_hash.encode("utf-8")
+            user.password_hash = hashlib.sha256(password).hexdigest()
+            session.add(user)
+            session.commit()
+            return UserPDData.model_validate(user)
+
+    def delete_user_by_id(self, id_user: int) -> None:
+        with session_factory() as session:
+            query = delete(self.model).where(self.model.id == id_user)
+            session.execute(query)
+            session.commit()
             return None
-        return UserPDData.model_validate(user)
 
+    # Возвращение плей листа + музыки в ней
+    def get_plalylist_by_user_id(self, user_id: int) -> List[PlayListPDData]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.id == user_id)
+            user = session.execute(query).scalar()
+            return [
+                PlayListPDData.model_validate(playlist) for playlist in user.playlists
+            ]
 
-# ORM (Поиск пользователя по мылу)
-def get_user_by_email(session: Session, email: str) -> Optional[UserPDData]:
-    with session() as session:
-        query = select(User).where(User.email == email)
-        user = session.execute(query).scalar_one_or_none()
-        if user is None:
-            return None
-        return UserPDData.model_validate(user)
-
-
-# ORM (Установление значения статуса)
-def set_user_status(db: Session, user_id: int, status: bool) -> Optional[UserPDData]:
-    with db() as session:
-        query = update(User).where(User.id == user_id).values(is_active=status)
-        session.execute(query)
-        session.commit()
-        return get_user_by_id_orm(db, user_id)
-
-
-# Вывод количества пользователей (user) в бд
-def get_count_users(db: Session, only_active: bool = None) -> int:
-    with db() as session:
-        query = select(func.count(User.id))
-        if only_active:
-            query = query.where(User.is_active == True)
-        elif only_active is False:
-            query = query.where(User.is_active == False)
-        res = session.execute(query).scalar()
-    return res
-
-
-# Создание нового пользователя
-def create_user(db: Session, data: UserCreate) -> Optional[UserPDData]:
-    with db() as session:
-        user = User(**data.model_dump())
-        password = user.password_hash.encode('utf-8')
-        user.password_hash = hashlib.sha256(password).hexdigest()
-        session.add(user)
-        session.commit()
-        return UserPDData.model_validate(user)
-
-def delete_user_by_id(db: Session, id_user: int) -> None:
-    with db() as session:
-        query = delete(User).where(User.id == id_user)
-        session.execute(query)
-        session.commit()
-
-
-# Возвращение плей листа + музыки в ней
-def get_plalylist_by_user_id(db: Session, user_id: int) -> List[PlayListPDData]:
-    with db() as session:
-        query = select(PlayList).where(PlayList.id_user == user_id)
-        playlists = session.execute(query).unique().scalars().all()
-        return [PlayListPDData.model_validate(playlist) for playlist in playlists]
-
-def auth_user(db: Session, username: str, password: str) -> int:
-    with db() as session:
-        qeury = select(User).filter(User.username == username)
-        user = session.execute(qeury).scalar_one_or_none()
-        return user and user.password_hash == password
+    def auth_user(self, username: str, password: str) -> int:
+        with session_factory() as session:
+            qeury = select(self.model).filter(self.model.username == username)
+            user = session.execute(qeury).scalar_one_or_none()
+            return user and user.password_hash == password

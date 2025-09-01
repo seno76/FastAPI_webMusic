@@ -5,11 +5,19 @@
 .env
 
 *.txt
+!requirements.txt
 
 *.db
 
 *.ini
+.idea
 
 /migrations/
+__pycache__/
+*/*/__pycache__/
+*/__pycache__/
+
+*.mp3
+*.mp4
 
 

@@ -1,146 +1,116 @@
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.orm import selectinload
 from typing import Optional, List
-from src.models.modelsORM import *
-from sqlalchemy import select, delete, insert, update, func
+from sqlalchemy import select, delete, update, func
+from src.models.modelsORM import Track, Album, Genre, Author
 from src.models.modelsPD import TrackPD, TrackPDData, TrackCreate, TrackUpdate
+from src.utils.abstractions import SQLAlchemyRepository
+from src.bd.database import session_factory
 from datetime import date
 
 
+class TrackRepository(SQLAlchemyRepository):
+    model = Track
 
-def get_track_by_id(db: Session, track_id: int) -> Optional[TrackPDData]:
-    """Получить трек по ID со связанными данными"""
-    with db() as session:
-        track = session.scalar(
-            select(Track)
-            .options(
-                joinedload(Track.author),
-                joinedload(Track.album),
-                joinedload(Track.genre)
+    def get_track_by_id(self, track_id: int) -> Optional[TrackPDData]:
+        with session_factory() as session:
+            track = session.scalar(
+                select(self.model)
+                .options(
+                    selectinload(self.model.author),
+                    selectinload(self.model.album),
+                    selectinload(self.model.genre),
+                )
+                .where(self.model.id == track_id)
             )
-            .where(Track.id == track_id)
-        )
-        if not track:
-            return None
-        return TrackPDData.from_orm(track)
+            if not track:
+                return None
+            return TrackPDData.model_validate(track)
 
+    def create_track(self, data: TrackCreate) -> TrackPD:
+        with session_factory() as session:
+            track = self.model(**data.model_dump())
+            track.file_path = str(track.file_path)
+            session.add(track)
+            session.commit()
+            session.refresh(track)
+            return TrackPD.model_validate(track)
 
-def create_track(db: Session, data: TrackCreate) -> TrackPD:
-    with db() as session:
-        track = Track(**data.model_dump())
-        track.file_path = str(track.file_path)
-        session.add(track)
-        session.commit()
-        session.refresh(track)
-        return TrackPD.from_orm(track)
+    def delete_track(self, track_id: int) -> bool:
+        with session_factory() as session:
+            track = session.get(self.model, track_id)
+            if not track:
+                return False
+            session.delete(track)
+            session.commit()
+            return True
 
-def create_track_2(db: Session, data: dict) -> Track:
-    with db() as session:
-        query = insert(Track).values(**data).returning(Track)
-        print(query, "------->", type(query))
-        result = session.execute(query).scalar_one()
-        session.commit()
-        return TrackPD.from_orm(result)
+    def get_all_tracks(self, limit: int = 100, offset: int = 0) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).offset(offset).limit(limit)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-def delete_track_by_id(db: Session, track_id: int) -> None:
-    with db() as session:
-        if not session.get(Track, track_id):
-            return False
-        query = delete(Track).where(Track.id == track_id)
-        session.execute(query)
-        session.commit()
-        return True
+    def update_track(self, track_id: int, data: TrackUpdate) -> Optional[TrackPD]:
+        with session_factory() as session:
+            track = session.get(self.model, track_id)
+            if not track:
+                return None
 
-def get_list_tracks(
-        db: Session,
-        author_id: int = None,
-        genre_id: int = None,
-        limit: int = 100,
-        offset: int = 0
-) -> List[TrackPD]:
+            update_data = data.model_dump(exclude_unset=True)
+            if "file_path" in update_data:
+                update_data["file_path"] = str(update_data["file_path"])
 
-    with db() as session:
-        query = select(Track)
+            for field, value in update_data.items():
+                setattr(track, field, value)
 
-        if author_id:
-            query = query.where(Track.author_id == author_id)
+            session.commit()
+            session.refresh(track)
+            return TrackPD.model_validate(track)
 
-        if genre_id:
-            query = query.where(Track.genre_id == genre_id)
+    def get_tracks_by_author(self, author_id: int) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.author_id == author_id)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-        tracks = session.execute(query.offset(offset).limit(limit)).scalars().all()
+    def get_tracks_by_album(self, album_id: int) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.album_id == album_id)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-        return [TrackPD.from_orm(track) for track in tracks]
+    def get_tracks_by_genre(self, genre_id: int) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.genre_id == genre_id)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
+    def get_tracks_released_after(self, release_date: date) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).where(self.model.release_date >= release_date)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-def update_data(db: Session, id_track: int, data: TrackUpdate) -> Optional[TrackPD]:
-    with db() as session:
-        data.file_path = str(data.file_path)
-        query = update(Track).\
-            where(Track.id == id_track).\
-            values(**data.model_dump(exclude_unset=True)).\
-            returning(Track)                                         # Проблема очевидная если у нас будут передаваться в словаре  ключи которых не существует  # упадет с ошибкой надо будет проверить через hasattr
-        track = session.execute(query).scalar_one_or_none()
-        session.commit()
-        return TrackPD.model_validate(track)
+    def get_top_rated_tracks(self, limit: int = 100) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).order_by(self.model.rating.desc()).limit(limit)
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-
-def get_tracks_by_author(db: Session, author_id: int) -> List[TrackPD]:
-    with db() as session:
-        query = select(Track).where(Track.author_id == author_id).options(joinedload(Track.album))
-        tracks = session.execute(query).scalars().all()
-        return [TrackPD.model_validate(track) for track in tracks]
-
-def get_by_album(db: Session, album_id: int) -> List[TrackPD]:
-    with db() as session:
-        query = select(Track)\
-            .filter(Track.album_id == album_id)\
-            .options(
-                joinedload(Track.genre),
-                joinedload(Track.author),
-                joinedload(Track.album),
-        )
-        tracks = session.execute(query).unique().scalars().all()
-        print(tracks)
-    return [TrackPD.model_validate(t) for t in tracks]
-
-def get_by_genre(db: Session, genre_id: int) -> List[TrackPD]:
-    with db() as session:
-        query = select(Track).where(Track.genre_id == genre_id)\
-            .options(joinedload(Track.genre),
-                     joinedload(Track.author),
+    def search_tracks_by_title(self, title_query: str) -> List[TrackPD]:
+        with session_factory() as session:
+            query = select(self.model).where(
+                func.lower(self.model.title).contains(func.lower(title_query))
             )
-        tracks = session.execute(query).scalars().all()
-        return [TrackPD.from_orm(t) for t in tracks]
+            tracks = session.execute(query).scalars().all()
+            return [TrackPD.model_validate(track) for track in tracks]
 
-# Методы для работы с датами и рейтингом
-def get_released_after(db: Session, date: date) -> List[TrackPD]:
-    with db() as session:
-        query = select(Track).where(Track.release_date >= date).order_by(Track.release_date)
-        tracks = session.execute(query).scalars().all()
-        return [TrackPD.from_orm(t) for t in tracks]
+    def get_average_rating(self) -> float:
+        with session_factory() as session:
+            result = session.scalar(select(func.avg(self.model.rating)))
+            return float(result) if result else 0.0
 
-def get_top_rated(db: Session, limit: int = 100) -> List[TrackPD]:
-    with db() as session:
-        tracks = session.query(Track) \
-            .order_by(Track.rating.desc()) \
-            .limit(limit) \
-            .all()
-    return [TrackPD.from_orm(t) for t in tracks]
-
-# Поисковые методы
-def search_by_title(db: Session, title_query: str) -> List[TrackPD]:
-    """Поиск треков по названию"""
-    with db() as session:
-        tracks = session.query(Track) \
-            .filter(func.lower(Track.title).contains(func.lower(title_query))) \
-            .all()
-    return [TrackPD.from_orm(t) for t in tracks]
-
-# Агрегатные методы (возвращают примитивные типы)
-def get_average_rating(db: Session) -> float:
-    """Средний рейтинг всех треков"""
-    return db().query(func.avg(Track.rating)).scalar() or 0.0
-
-def get_total_duration(db: Session) -> int:
-    """Общая продолжительность всех треков"""
-    return db().query(func.sum(Track.duration)).scalar() or 0
+    def get_total_duration(self) -> int:
+        with session_factory() as session:
+            result = session.scalar(select(func.sum(self.model.duration)))
+            return int(result) if result else 0
