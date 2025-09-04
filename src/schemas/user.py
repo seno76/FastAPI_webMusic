@@ -1,7 +1,14 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from src.schemas import (
+        AuthorPD,
+        PlayListPDData,
+        PreferenceTrackPDData,
+        PreferenceAlbumPDData,
+    )
 
 
 class UserBase(BaseModel):
@@ -46,4 +53,3 @@ class UserPDData(UserPD):
 class UserLogin(BaseModel):
     username: str
     password_hash: str
-    

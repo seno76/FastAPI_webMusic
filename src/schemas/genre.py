@@ -1,7 +1,8 @@
 from pydantic import BaseModel, ConfigDict
-from typing import List
+from typing import List, TYPE_CHECKING
 
-
+if TYPE_CHECKING:
+    from src.schemas import TrackPD, AlbumPD
 
 
 class GenreBase(BaseModel):
@@ -27,4 +28,3 @@ class GenreUpdate(BaseModel):
 class GenrePDData(GenrePD):
     tracks: List['TrackPD'] = []
     albums: List['AlbumPD'] = []
-    

@@ -1,8 +1,9 @@
 from pydantic import BaseModel, AnyUrl, ConfigDict
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
-
+if TYPE_CHECKING:
+    from src.schemas import TrackPD
 
 
 class PlayListBase(BaseModel):
@@ -32,4 +33,3 @@ class PlayListUpdate(BaseModel):
 
 class PlayListPDData(PlayListPD):
     tracks: List['TrackPD'] = []
-    

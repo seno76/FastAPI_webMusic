@@ -1,7 +1,9 @@
+from token import TYPE_IGNORE
 from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
-
+if TYPE_CHECKING:
+    from src.schemas import AlbumPD, UserPD, TrackPD
 
 
 class PreferenceAlbum(BaseModel):
@@ -39,4 +41,3 @@ class Preference(BaseModel):
     albums: List['AlbumPD'] = []
     tracks: List['TrackPD'] = []
     model_config = ConfigDict(from_attributes=True)
-

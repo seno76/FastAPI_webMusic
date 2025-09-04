@@ -1,7 +1,9 @@
 from pydantic import BaseModel, HttpUrl, AnyUrl, Field, ConfigDict
 from datetime import date, datetime
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from src.schemas import TrackPD, GenrePD, PreferenceAlbumPDData
 
 
 class AlbumBase(BaseModel):
@@ -32,5 +34,5 @@ class AlbumUpdate(BaseModel):
 
 class AlbumPDData(AlbumPD):
     tracks: List["TrackPD"] = []
-    genre: Optional['GenrePD'] = None
-    user_preferences: List['PreferenceAlbumPDData'] = []
+    genre: Optional["GenrePD"] = None
+    user_preferences: List["PreferenceAlbumPDData"] = []

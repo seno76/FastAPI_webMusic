@@ -1,8 +1,16 @@
 from pydantic import BaseModel, Field, ConfigDict
 from datetime import date, datetime
 from pathlib import Path
-from typing import Optional, List
+from typing import Optional, List, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from src.schemas import (
+        AuthorPD,
+        AlbumPD,
+        GenrePD,
+        PlayListPD,
+        PreferenceTrackPDData,
+    )
 
 
 class TrackBase(BaseModel):
@@ -45,4 +53,3 @@ class TrackPDData(TrackPD):
     genre: Optional['GenrePD'] = None
     playlist: List['PlayListPD'] = []
     user_preferences: List['PreferenceTrackPDData'] = []
-    
