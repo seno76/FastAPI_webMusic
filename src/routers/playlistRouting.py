@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Dict
-from src.models.modelsPD import (
+from src.schemas import (
     PlayListBase,
     PlayListCreate,
     PlayListUpdate,
     PlayListPD,
     PlayListPDData,
-    TrackPD
+    TrackPD,
 )
 from src.core.security import security
 from src.service.playlist import PlayListService

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from src.models.modelsORM import *
 from sqlalchemy import select, update, delete
-from src.models.modelsPD import GenrePDData, GenrePD, GenreBase, GenreCreate
+from src.schemas.genre import GenrePDData, GenrePD, GenreCreate
 from src.utils.abstractions import SQLAlchemyRepository
 from src.bd.database import session_factory
 

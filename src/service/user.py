@@ -1,4 +1,4 @@
-from src.models.modelsPD import UserCreate
+from src.schemas.user import UserCreate
 from src.utils.abstractions import AbstractRepository
 
 class UserService:

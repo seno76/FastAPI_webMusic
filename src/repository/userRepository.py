@@ -2,10 +2,9 @@ import hashlib
 from src.models.modelsORM import *
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select, update, func, delete
-from src.models.modelsPD import *
 from typing import Optional, List
 from src.bd.database import session_factory
-
+from src.schemas import UserPD, UserPDData, PlayListPDData
 from src.utils.abstractions import SQLAlchemyRepository
 
 

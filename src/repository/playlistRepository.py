@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session, selectinload
 from typing import List, Optional
 from sqlalchemy import select, insert
 from src.models.modelsORM import PlayList, PlaylistTrack, Track
-from src.models.modelsPD import (
+from src.schemas import (
     PlayListUpdate,
     PlayListCreate,
     PlayListPD,

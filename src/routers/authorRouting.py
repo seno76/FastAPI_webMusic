@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Path, Query, Depends
-from typing import List, Optional
-from src.models.modelsPD import AuthorPDData, AuthorUpdate, AuthorCreate
+from typing import List
+from src.schemas import AuthorPDData, AuthorUpdate, AuthorCreate
 from src.core.security import security
 from src.core.depends import author_service_dep
 from src.service.author import AuthorService

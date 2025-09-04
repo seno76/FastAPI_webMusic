@@ -2,7 +2,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy import select, delete, update
 from typing import Optional, List
 from src.models.modelsORM import *
-from src.models.modelsPD import *
+from src.schemas.author import *
 from src.bd.database import session_factory
 from src.utils.abstractions import SQLAlchemyRepository
 

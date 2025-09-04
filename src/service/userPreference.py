@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict
-from src.models.modelsPD import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
+from src.schemas import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
 from src.utils.abstractions import AbstractRepository
 
 

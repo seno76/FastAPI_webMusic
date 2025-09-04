@@ -10,8 +10,8 @@ config.JWT_ACCESS_COOKIE_NAME = "token"
 config.JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=2)
 
 
-config.JWT_COOKIE_CSRF_PROTECT = False  #
-config.JWT_CSRF_IN_COOKIES = False
+config.JWT_COOKIE_CSRF_PROTECT = True  #
+config.JWT_CSRF_IN_COOKIES = True
 config.JWT_ACCESS_CSRF_COOKIE_NAME = "csrf_token"
 config.JWT_CSRF_METHODS = ["POST", "PUT", "PATCH", "DELETE"]
 

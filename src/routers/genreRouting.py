@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from src.bd.database import session_factory
-from src.models.modelsPD import GenreBase, GenrePD, GenreCreate, GenrePDData
+from src.schemas import GenreBase, GenrePD, GenreCreate, GenrePDData
 from typing import List, Dict
 from src.core.security import security
 from src.service.genre import GenreService

@@ -1,4 +1,10 @@
-from src.models.modelsPD import PlayListCreate, PlayListUpdate, PlayListPD, PlayListPDData, TrackPD
+from src.schemas import (
+    PlayListCreate,
+    PlayListUpdate,
+    PlayListPD,
+    PlayListPDData,
+    TrackPD,
+)
 from src.utils.abstractions import AbstractRepository
 from typing import List, Optional
 

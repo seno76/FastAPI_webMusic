@@ -1,7 +1,7 @@
 import select
 
 from urllib3 import Retry
-from src.models.modelsPD import AlbumCreate, AlbumPD, AlbumUpdate
+from src.schemas.album import AlbumCreate, AlbumPD, AlbumUpdate
 from src.utils.abstractions import AbstractRepository
 
 
@@ -27,6 +27,3 @@ class AlbumService:
     
     def get_albums_genre(self, id_genre: int, limit: int = 100, offset: int = 0):
         return self.repository.get_albums_by_genre(id_genre, limit=limit, offset=offset)
-    
-    
-    

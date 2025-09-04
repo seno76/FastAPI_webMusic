@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Dict
-from src.models.modelsPD import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
+from src.schemas import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
 from src.core.security import security
 from src.service.userPreference import (
     UserTrackPreferenceService,

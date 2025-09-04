@@ -1,4 +1,4 @@
-from src.models.modelsPD import TrackCreate, TrackUpdate, TrackPD, TrackPDData
+from src.schemas import TrackCreate, TrackUpdate, TrackPD, TrackPDData
 from src.utils.abstractions import AbstractRepository
 from typing import List, Optional
 from datetime import date

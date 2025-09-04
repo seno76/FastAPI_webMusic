@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, joinedload
 from typing import Optional, List, Dict
 from src.models.modelsORM import *
 from sqlalchemy import select, delete, update
-from src.models.modelsPD import AlbumPD, AlbumPDData, AlbumCreate, AlbumUpdate
+from src.schemas.album import AlbumPD, AlbumPDData, AlbumCreate, AlbumUpdate
 from src.utils.abstractions import AbstractRepository, SQLAlchemyRepository
 from src.bd.database import session_factory
 

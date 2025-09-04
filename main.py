@@ -1,16 +1,21 @@
-from fastapi import FastAPI, HTTPException, UploadFile
+from urllib import response
+from fastapi import FastAPI, HTTPException, Response, UploadFile
 from fastapi.responses import FileResponse
-from typing import List
-from src.api.userRouting import router as user_router
-from src.api.authorRouting import router as author_router
-from src.api.albumRouting import router as album_router
-from src.api.genreRouting import router as genre_router
-from src.api.trackRouting import router as track_router
-from src.api.playlistRouting import router as playlist_router
-from src.api.userPreferenceService import router as preference_router
-from src.api.login import router as login_router
+from typing import Callable, List
+
+from h11 import Request
+from requests import FileModeWarning
+from src.routers.userRouting import router as user_router
+from src.routers.authorRouting import router as author_router
+from src.routers.albumRouting import router as album_router
+from src.routers.genreRouting import router as genre_router
+from src.routers.trackRouting import router as track_router
+from src.routers.playlistRouting import router as playlist_router
+from src.routers.userPreferenceRouting import router as preference_router
+from src.routers.login import router as login_router
 from fastapi.middleware.cors import CORSMiddleware
 import os
+import time
 
 
 app = FastAPI()
@@ -19,6 +24,21 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"]
 )
+
+
+@app.middleware("http")
+async def counter(request: Request, call_next: Callable):
+    ip_adress = request.client.host
+    print(ip_adress)
+    # if ip_adress in ["127.0.0.1", "localhost"]:
+    #     return Response(status_code=429, content="Вы привысили количество запросов")
+
+    start = time.perf_counter()
+    response = await call_next(request)
+    end = time.perf_counter()
+    print(f"Время обработки запроса: {end - start}")
+
+    return response
 
 
 @app.get("/")

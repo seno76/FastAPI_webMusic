@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Dict
 from datetime import date
-from src.models.modelsPD import (
+from src.schemas import (
     TrackBase,
     TrackCreate,
     TrackPD,

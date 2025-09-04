@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 from typing import List, Optional
-from src.models.modelsPD import UserPD, UserPDData, UserCreate, PlayListPDData
-from src.core.security import security
+from fastapi.background import P
+from src.schemas import UserPD, UserPDData, UserCreate, PlayListPDData
 from src.core.depends import user_service_dep
 from src.service.user import UserService
 

@@ -1,6 +1,6 @@
 import hashlib
 from fastapi import APIRouter, Response, HTTPException, Depends
-from src.models.modelsPD import UserLogin
+from src.schemas import UserLogin
 from src.core.security import security
 from src.repository.userRepository import UserRepository
 from src.bd.database import session_factory
@@ -27,6 +27,8 @@ def login(
     if user_service.login_user(login, passwd):
         token = security.create_access_token(uid=data.username)
         response.set_cookie("token", token)
+        csrf = security.create_refresh_token(uid=data.username)
+        response.set_cookie("csrf_token", csrf)
         return {"access_token": token}
     raise HTTPException(401, detail={"message": "Bad credentials"})
 

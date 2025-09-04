@@ -1,8 +1,8 @@
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
-from typing import List, Optional, Dict
-from src.models.modelsORM import UserTrackPreference, UserAlbumPreference, Track, Album
-from src.models.modelsPD import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
+from typing import List, Optional
+from src.models.modelsORM import UserTrackPreference, UserAlbumPreference
+from src.schemas import PreferenceTrackPD, PreferenceAlbumPD, TrackPD, AlbumPD
 from src.utils.abstractions import SQLAlchemyRepository
 from src.bd.database import session_factory
 

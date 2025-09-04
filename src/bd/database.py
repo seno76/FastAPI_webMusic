@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 sync_engine = create_engine(
     url=settings_bd.get_db_url,
-    echo=True,
+    echo=False,
 )
 
 session_factory = sessionmaker(sync_engine)

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import selectinload
 from typing import Optional, List
-from sqlalchemy import select, delete, update, func
-from src.models.modelsORM import Track, Album, Genre, Author
-from src.models.modelsPD import TrackPD, TrackPDData, TrackCreate, TrackUpdate
+from sqlalchemy import select, func
+from src.models.modelsORM import Track
+from src.schemas import TrackPD, TrackPDData, TrackCreate, TrackUpdate
 from src.utils.abstractions import SQLAlchemyRepository
 from src.bd.database import session_factory
 from datetime import date

@@ -1,5 +1,5 @@
 from typing import List, Optional
-from src.models.modelsPD import AuthorCreate, AuthorUpdate, AuthorPDData
+from src.schemas import AuthorCreate, AuthorUpdate, AuthorPDData
 from src.utils.abstractions import AbstractRepository
 
 class AuthorService:

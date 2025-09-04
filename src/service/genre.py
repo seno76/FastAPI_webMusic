@@ -1,4 +1,4 @@
-from src.models.modelsPD import GenreCreate
+from src.schemas import GenreCreate
 from src.utils.abstractions import AbstractRepository
 
 

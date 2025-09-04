@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Query, Path, HTTPException, Depends
 from typing import List, Optional, Dict
-from src.bd.database import session_factory
-from src.models.modelsPD import AlbumPD, AlbumPDData, AlbumCreate, AlbumUpdate
+from src.schemas import AlbumPD, AlbumPDData, AlbumCreate, AlbumUpdate
 from src.core.depends import album_service_dep
 from src.core.security import security
-from src.service import album
 from src.service.album import AlbumService
 
 router = APIRouter(prefix="/albums", tags=["Albums"])
